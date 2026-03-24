@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Category_Question_Console
 {
@@ -11,8 +13,37 @@ namespace Category_Question_Console
         {
             while (true)
             {
-                var tested = LoadTested();
+                var users = LoadTested();
+                User currentUser = LoginUser(users);
             }
+        }
+
+        private static User? LoginUser(List<User> users)
+        {
+            Console.WriteLine("Логин:");
+            string login = Console.ReadLine();
+
+            Console.WriteLine("Пароль:");
+            string password = Console.ReadLine();
+
+            foreach(var user in users)
+            {
+                if(user.Login == login.Trim() && user.Password == password.Trim())
+                {
+                    return user;
+                }
+            }
+            Console.WriteLine("Неправильный логин или пароль!");
+            Console.WriteLine();
+            Console.WriteLine("Для продолжения нажмите на любую клавишу кроме 0");
+            Console.WriteLine("Для выхода нажмите 0");
+            var keyExit = Console.ReadKey();
+            if(keyExit.Key == ConsoleKey.D0)
+            {
+                Environment.Exit(0);
+            }
+            Console.Clear();
+            return null;
         }
 
         private static List<User> LoadTested()
