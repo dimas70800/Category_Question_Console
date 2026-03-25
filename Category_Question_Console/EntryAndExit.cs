@@ -15,6 +15,39 @@ namespace Category_Question_Console
             {
                 var users = LoadTested();
                 User currentUser = LoginUser(users);
+                if(currentUser == null)
+                {
+                    Console.WriteLine("Неправильный логин или пароль!");
+                    Console.WriteLine();
+                    Console.WriteLine("Для выхода нажмите 0");
+                    var keyExit = Console.ReadKey();
+                    if(keyExit.Key == ConsoleKey.D0)
+                    {
+                        Environment.Exit(0);
+                    }
+                    Console.Clear();
+                    continue;
+                }
+
+                string result;
+
+                if (currentUser.Role.Equals("admin",StringComparison.OrdinalIgnoreCase))
+                {
+                    result = MainMenu.AdminMenu();
+                }
+                else
+                {
+                    result = MainMenu.UserMenu();
+                }
+                if (result.Equals("Logout", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                if (result.Equals("Exit", StringComparison.OrdinalIgnoreCase))
+                {
+                    break;
+                }
             }
         }
 
@@ -33,16 +66,6 @@ namespace Category_Question_Console
                     return user;
                 }
             }
-            Console.WriteLine("Неправильный логин или пароль!");
-            Console.WriteLine();
-            Console.WriteLine("Для продолжения нажмите на любую клавишу кроме 0");
-            Console.WriteLine("Для выхода нажмите 0");
-            var keyExit = Console.ReadKey();
-            if(keyExit.Key == ConsoleKey.D0)
-            {
-                Environment.Exit(0);
-            }
-            Console.Clear();
             return null;
         }
 
