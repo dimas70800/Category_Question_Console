@@ -1,0 +1,27 @@
+{
+  "Name": "\u041A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u044F 3",
+  "Questions": [
+    {
+      "Text": "\u0422\u0440\u0430\u0432\u0430 \u0437\u0435\u043B\u0435\u043D\u0430\u044F?",
+      "Options": [
+        "\u0414\u0430",
+        "\u041D\u0435\u0442",
+        "\u041D\u0435 \u0437\u043D\u0430\u044E"
+      ],
+      "CorrectOptionIndex": 99,
+      "Points": 100,
+      "IsResolved": false
+    },
+    {
+      "Text": "\u0421\u043E\u0441\u0430\u043B?",
+      "Options": [
+        "\u0414\u0430",
+        "\u041D\u0430\u0432\u0435\u0440\u043D\u043E",
+        "\u041D\u0435 \u0437\u043D\u0430\u044E"
+      ],
+      "CorrectOptionIndex": 2,
+      "Points": 1000,
+      "IsResolved": false
+    }
+  ]
+}

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Text.Json.Serialization;
 
 namespace Category_Question_Console
 {
@@ -9,5 +7,9 @@ namespace Category_Question_Console
         public string Login { get; set; }
         public string Password { get; set; }
         public string Role { get; set; }
+        public int Score { get; set; } = 0;
+
+        [JsonIgnore]
+        public string DisplayInfo => $"{Login} (Score: {Score})";
     }
 }

@@ -31,13 +31,13 @@ namespace Category_Question_Console
 
                 string result;
 
-                if (currentUser.Role.Equals("admin",StringComparison.OrdinalIgnoreCase))
+                if (currentUser.Role.Equals("admin", StringComparison.OrdinalIgnoreCase))
                 {
-                    result = MainMenu.AdminMenu();
+                    result = MainMenu.AdminMenu(currentUser);
                 }
                 else
                 {
-                    result = MainMenu.UserMenu();
+                    result = MainMenu.UserMenu(currentUser);
                 }
                 if (result.Equals("Logout", StringComparison.OrdinalIgnoreCase))
                 {

@@ -1,0 +1,27 @@
+{
+  "Name": "1",
+  "Questions": [
+    {
+      "Text": "\u0427\u0442\u043E",
+      "Options": [
+        "\u0414\u0410",
+        "\u043D\u0435\u0442",
+        "\u041D\u0435 \u0437\u043D\u0430\u044E"
+      ],
+      "CorrectOptionIndex": 2,
+      "Points": 5,
+      "IsResolved": false
+    },
+    {
+      "Text": "\u0427\u0422\u043E 2",
+      "Options": [
+        "\u0414\u04102",
+        "\u041D\u0435\u04422",
+        "\u041D\u0435 \u0437\u043D\u0430\u044E2"
+      ],
+      "CorrectOptionIndex": 0,
+      "Points": 10,
+      "IsResolved": false
+    }
+  ]
+}

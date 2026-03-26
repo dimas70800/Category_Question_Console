@@ -1,126 +1,191 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
 
 namespace Category_Question_Console
 {
     internal class MainMenu
     {
-        public static string RunMenu(List<string> menu)
-        {
-            int position = 0;
-            ConsoleKey key;
+        private static List<Category> categories = new List<Category>();
 
+        public static string AdminMenu(User currentUser)
+        {
+            var menu = new List<string>
+            {
+                "Добавить категорию",
+                "Добавить вопрос в категорию",
+                "Сохранить категории",
+                "Загрузить категории",
+                "Logout",
+                "Exit"
+            };
+            return RunMenu(menu, currentUser);
+        }
+
+        public static string UserMenu(User currentUser)
+        {
+            var menu = new List<string>
+            {
+                "Выбрать категорию",
+                "Мой результат",
+                "Logout",
+                "Exit"
+            };
+            return RunMenu(menu, currentUser);
+        }
+
+        private static string RunMenu(List<string> menu, User currentUser)
+        {
+            LoadCategories();
+            int position = 0;
             while (true)
             {
                 Console.Clear();
+                Console.WriteLine($"Меню | {currentUser.Login} | Очки: {currentUser.Score}\n");
 
                 for (int i = 0; i < menu.Count; i++)
+                    Console.WriteLine((i == position ? "> " : "  ") + menu[i]);
+
+                var key = Console.ReadKey(true).Key;
+
+                if (key == ConsoleKey.UpArrow) position = (position == 0) ? menu.Count - 1 : position - 1;
+                if (key == ConsoleKey.DownArrow) position = (position == menu.Count - 1) ? 0 : position + 1;
+                if (key == ConsoleKey.Enter)
                 {
-                    if (i == position)
-                        Console.WriteLine("> " + menu[i]);
-                    else
-                        Console.WriteLine("  " + menu[i]);
-                }
+                    string choice = menu[position];
+                    if (choice == "Logout" || choice == "Exit"){
+                        Console.Clear();
+                        return choice;
+                    }
 
-                key = Console.ReadKey(true).Key;
-
-                switch (key)
-                {
-                    case ConsoleKey.UpArrow:
-                        position = (position == 0) ? menu.Count - 1 : position - 1;
-                        break;
-
-                    case ConsoleKey.DownArrow:
-                        position = (position == menu.Count - 1) ? 0 : position + 1;
-                        break;
-
-                    case ConsoleKey.Enter:
-                        string selected = menu[position];
-
-                        if (selected.Equals("Logout", StringComparison.OrdinalIgnoreCase) ||
-                            selected.Equals("Exit", StringComparison.OrdinalIgnoreCase))
-                        {
-                            Console.Clear();
-                            Console.WriteLine($"Подтвердить {selected}? (Y/N)");
-                            var confirm = Console.ReadKey(true).Key;
-
-                            if (confirm == ConsoleKey.Y || confirm == ConsoleKey.Enter)
-                            {
-                                Console.Clear();
-                                return selected;
-                            }
-                        }
-
-                        else if (selected.Equals("Добавить Категорию", StringComparison.OrdinalIgnoreCase))
-                        {
-                            Console.WriteLine("Добавить");
-                            Console.ReadKey();
-                            //AddCategory
-                        }
-                        else if (selected.Equals("Изменить категорию", StringComparison.OrdinalIgnoreCase))
-                        {
-                            Console.WriteLine("Изменить");
-                            Console.ReadKey();
-                            //ChangeCategory
-                        }
-                        else if (selected.Equals("Удалить категорию", StringComparison.OrdinalIgnoreCase))
-                        {
-                            Console.WriteLine("Удалить");
-                            Console.ReadKey();
-                            //DeleteCategory
-                        }
-                        else if (selected.Equals("Сохранить категорию", StringComparison.OrdinalIgnoreCase))
-                        {
-                            Console.WriteLine("Сохранить");
-                            Console.ReadKey();
-                            //SaveCategory
-                        }
-                        else if (selected.Equals("Загрузить категорию", StringComparison.OrdinalIgnoreCase))
-                        {
-                            Console.WriteLine("Загрузить");
-                            Console.ReadKey();
-                            //LoadCategory
-                        }
-                        else if (selected.Equals("Выбрать категорию", StringComparison.OrdinalIgnoreCase))
-                        {
-                            Console.WriteLine("Выбрать");
-                            Console.ReadKey();
-                            //ChooseCategory
-                        }
-
-                        break;
+                    HandleChoice(choice, currentUser);
                 }
             }
         }
 
-        public static string UserMenu()
+        private static void HandleChoice(string choice, User user)
         {
-            List<string> menu = new List<string>()
+            Console.Clear();
+            switch (choice)
             {
-                "Выбрать категорию",
-                "Загрузить категорию",
-                "Logout",
-                "Exit"
-            };
+                case "Добавить категорию":
+                    var cat = new Category();
+                    Console.Write("Название категории: ");
+                    cat.Name = Console.ReadLine();
+                    cat.AddQuestion();
+                    categories.Add(cat);
+                    break;
 
-            return RunMenu(menu);
+                case "Добавить вопрос в категорию":
+                    ShowCategories();
+                    Console.Write("Выберите категорию (номер): ");
+                    if (int.TryParse(Console.ReadLine(), out int catIndex) && catIndex > 0 && catIndex <= categories.Count)
+                        categories[catIndex - 1].AddQuestion();
+                    break;
+
+                case "Сохранить категории":
+                    foreach (var c in categories)
+                        c.SaveToFile();
+                    break;
+
+                case "Загрузить категории":
+                    LoadCategories();
+                    break;
+
+                case "Выбрать категорию":
+                    UserSelectCategory(user);
+                    break;
+
+                case "Мой результат":
+                    Console.WriteLine($"Ваш текущий результат: {user.Score} баллов");
+                    break;
+            }
+            Console.WriteLine("\nНажмите любую клавишу...");
+            Console.ReadKey();
         }
 
-        public static string AdminMenu()
+        private static void ShowCategories()
         {
-            List<string> menu = new List<string>()
+            if (categories.Count == 0)
             {
-                "Добавить категорию",
-                "Изменить категорию",
-                "Удалить категорию",
-                "Сохранить категорию",
-                "Загрузить категорию",
-                "Logout",
-                "Exit"
-            };
+                Console.WriteLine("Нет доступных категорий.");
+                return;
+            }
+            for (int i = 0; i < categories.Count; i++)
+                Console.WriteLine($"{i + 1}. {categories[i].Name} ({categories[i].Questions.Count} вопросов)");
+        }
 
-            return RunMenu(menu);
+        private static void LoadCategories()
+        {
+            var files = Directory.GetFiles(".", "*.json")
+                                 .Where(f => !f.Contains("users.json"))
+                                 .ToArray();
+
+            foreach (var file in files)
+            {
+                try
+                {
+                    string json = File.ReadAllText(file);
+                    var cat = JsonSerializer.Deserialize<Category>(json);
+                    if (cat != null && categories.All(c => c.Name != cat.Name))
+                        categories.Add(cat);
+                }
+                catch { }
+            }
+            Console.WriteLine("Категории загружены.");
+        }
+
+        private static void UserSelectCategory(User user)
+        {
+            if (categories.Count == 0)
+            {
+                Console.WriteLine("Нет доступных категорий.");
+                return;
+            }
+
+            ShowCategories();
+            Console.Write("\nВыберите категорию: ");
+            if (!int.TryParse(Console.ReadLine(), out int catNum) || catNum < 1 || catNum > categories.Count)
+                return;
+
+            var selectedCategory = categories[catNum - 1];
+
+            if (selectedCategory.IsEmpty())
+            {
+                Console.WriteLine("В этой категории нет вопросов.");
+                categories.Remove(selectedCategory);
+                return;
+            }
+
+            selectedCategory.ShowQuestions();
+            Console.Write("\nВыберите вопрос: ");
+            if (!int.TryParse(Console.ReadLine(), out int qNum) || qNum < 1 || qNum > selectedCategory.Questions.Count)
+                return;
+
+            var question = selectedCategory.GetQuestion(qNum - 1);
+
+            for (int i = 0; i < question.Options.Count; i++)
+                Console.WriteLine($"{i + 1}. {question.Options[i]}");
+
+            Console.Write("\nВаш ответ: ");
+            if (int.TryParse(Console.ReadLine(), out int answer) && answer - 1 == question.CorrectOptionIndex)
+            {
+                user.Score += question.Points;
+                Console.WriteLine($"Правильно! +{question.Points} баллов");
+                selectedCategory.RemoveQuestion(qNum - 1);
+
+                if (selectedCategory.IsEmpty())
+                {
+                    Console.WriteLine($"Категория '{selectedCategory.Name}' полностью пройдена и удалена.");
+                    categories.Remove(selectedCategory);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Неверно.");
+            }
         }
     }
 }
