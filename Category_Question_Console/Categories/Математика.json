@@ -1,0 +1,101 @@
+{
+  "Name": "\u041C\u0430\u0442\u0435\u043C\u0430\u0442\u0438\u043A\u0430",
+  "Questions": [
+    {
+      "Text": "\u0421\u043A\u043E\u043B\u044C\u043A\u043E \u0431\u0443\u0434\u0435\u0442 2 \u002B 2?",
+      "Options": [
+        "4",
+        "5",
+        "3",
+        "2"
+      ],
+      "CorrectOptionIndex": 0,
+      "Points": 10,
+      "IsResolved": false
+    },
+    {
+      "Text": "\u0421\u043A\u043E\u043B\u044C\u043A\u043E \u0431\u0443\u0434\u0435\u0442 2 \u002B 3?",
+      "Options": [
+        "5",
+        "6",
+        "4",
+        "3"
+      ],
+      "CorrectOptionIndex": 0,
+      "Points": 10,
+      "IsResolved": false
+    },
+    {
+      "Text": "\u0421\u043A\u043E\u043B\u044C\u043A\u043E \u0431\u0443\u0434\u0435\u0442 2 \u002B 4?",
+      "Options": [
+        "6",
+        "7",
+        "5",
+        "4"
+      ],
+      "CorrectOptionIndex": 0,
+      "Points": 10,
+      "IsResolved": false
+    },
+    {
+      "Text": "\u0421\u043A\u043E\u043B\u044C\u043A\u043E \u0431\u0443\u0434\u0435\u0442 2 \u002B 5?",
+      "Options": [
+        "7",
+        "8",
+        "6",
+        "5"
+      ],
+      "CorrectOptionIndex": 0,
+      "Points": 10,
+      "IsResolved": false
+    },
+    {
+      "Text": "\u0421\u043A\u043E\u043B\u044C\u043A\u043E \u0431\u0443\u0434\u0435\u0442 2 \u002B 6?",
+      "Options": [
+        "8",
+        "9",
+        "7",
+        "6"
+      ],
+      "CorrectOptionIndex": 0,
+      "Points": 10,
+      "IsResolved": false
+    },
+    {
+      "Text": "\u0421\u043A\u043E\u043B\u044C\u043A\u043E \u0431\u0443\u0434\u0435\u0442 2 \u002B 7?",
+      "Options": [
+        "9",
+        "10",
+        "8",
+        "7"
+      ],
+      "CorrectOptionIndex": 0,
+      "Points": 10,
+      "IsResolved": false
+    },
+    {
+      "Text": "\u0421\u043A\u043E\u043B\u044C\u043A\u043E \u0431\u0443\u0434\u0435\u0442 2 \u002B 8?",
+      "Options": [
+        "10",
+        "11",
+        "9",
+        "8"
+      ],
+      "CorrectOptionIndex": 0,
+      "Points": 10,
+      "IsResolved": false
+    },
+    {
+      "Text": "\u0421\u043A\u043E\u043B\u044C\u043A\u043E \u0431\u0443\u0434\u0435\u0442 2 \u002B 9?",
+      "Options": [
+        "11",
+        "12",
+        "10",
+        "9"
+      ],
+      "CorrectOptionIndex": 0,
+      "Points": 10,
+      "IsResolved": false
+    }
+  ]
+}

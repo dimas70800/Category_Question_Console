@@ -2,11 +2,13 @@
   {
     "Login": "user",
     "Password": "1234",
-    "Role": "Tested"
+    "Role": "Tested",
+    "Score": 1160
   },
   {
     "Login": "adm",
     "Password": "1234",
-    "Role": "Admin"
+    "Role": "Admin",
+    "Score": 0
   }
 ]

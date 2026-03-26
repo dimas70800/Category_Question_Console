@@ -1,4 +1,5 @@
-﻿using System;
+﻿// EntryAndExit.cs
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -15,13 +16,13 @@ namespace Category_Question_Console
             {
                 var users = LoadTested();
                 User currentUser = LoginUser(users);
-                if(currentUser == null)
+                if (currentUser == null)
                 {
                     Console.WriteLine("Неправильный логин или пароль!");
                     Console.WriteLine();
                     Console.WriteLine("Для выхода нажмите 0");
                     var keyExit = Console.ReadKey();
-                    if(keyExit.Key == ConsoleKey.D0)
+                    if (keyExit.Key == ConsoleKey.D0)
                     {
                         Environment.Exit(0);
                     }
@@ -39,6 +40,9 @@ namespace Category_Question_Console
                 {
                     result = MainMenu.UserMenu(currentUser);
                 }
+
+                SaveUserScore(currentUser);
+
                 if (result.Equals("Logout", StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
@@ -51,6 +55,21 @@ namespace Category_Question_Console
             }
         }
 
+        private static void SaveUserScore(User currentUser)
+        {
+            var users = LoadTested();
+            for (int i = 0; i < users.Count; i++)
+            {
+                if (users[i].Login == currentUser.Login)
+                {
+                    users[i].Score = currentUser.Score;
+                    break;
+                }
+            }
+            string json = JsonSerializer.Serialize(users, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText("users.json", json);
+        }
+
         private static User? LoginUser(List<User> users)
         {
             Console.WriteLine("Логин:");
@@ -59,9 +78,9 @@ namespace Category_Question_Console
             Console.WriteLine("Пароль:");
             string password = Console.ReadLine();
 
-            foreach(var user in users)
+            foreach (var user in users)
             {
-                if(user.Login == login.Trim() && user.Password == password.Trim())
+                if (user.Login == login.Trim() && user.Password == password.Trim())
                 {
                     return user;
                 }
@@ -80,8 +99,8 @@ namespace Category_Question_Console
             }
             else
             {
-                users.Add(new User { Login = "user", Password = "1234", Role = "Tested"});
-                users.Add(new User { Login = "adm", Password = "1234", Role = "Admin"});
+                users.Add(new User { Login = "user", Password = "1234", Role = "Tested" });
+                users.Add(new User { Login = "adm", Password = "1234", Role = "Admin" });
                 string json = JsonSerializer.Serialize(users, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText("users.json", json);
                 return users;

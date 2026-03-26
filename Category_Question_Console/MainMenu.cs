@@ -16,6 +16,8 @@ namespace Category_Question_Console
             {
                 "Добавить категорию",
                 "Добавить вопрос в категорию",
+                "Редактировать вопрос",
+                "Удалить вопрос",
                 "Сохранить категории",
                 "Загрузить категории",
                 "Logout",
@@ -55,7 +57,10 @@ namespace Category_Question_Console
                 if (key == ConsoleKey.Enter)
                 {
                     string choice = menu[position];
-                    if (choice == "Logout" || choice == "Exit"){
+                    if (choice == "Logout" || choice == "Exit")
+                    {
+                        SaveUsers();
+                        SaveUserScores();
                         Console.Clear();
                         return choice;
                     }
@@ -80,9 +85,20 @@ namespace Category_Question_Console
 
                 case "Добавить вопрос в категорию":
                     ShowCategories();
-                    Console.Write("Выберите категорию (номер): ");
-                    if (int.TryParse(Console.ReadLine(), out int catIndex) && catIndex > 0 && catIndex <= categories.Count)
-                        categories[catIndex - 1].AddQuestion();
+                    if (categories.Count > 0)
+                    {
+                        Console.Write("Выберите категорию (номер): ");
+                        if (int.TryParse(Console.ReadLine(), out int catIndex) && catIndex > 0 && catIndex <= categories.Count)
+                            categories[catIndex - 1].AddQuestion();
+                    }
+                    break;
+
+                case "Редактировать вопрос":
+                    EditQuestionFlow();
+                    break;
+
+                case "Удалить вопрос":
+                    DeleteQuestionFlow();
                     break;
 
                 case "Сохранить категории":
@@ -106,6 +122,62 @@ namespace Category_Question_Console
             Console.ReadKey();
         }
 
+        private static void EditQuestionFlow()
+        {
+            if (categories.Count == 0)
+            {
+                Console.WriteLine("Нет доступных категорий.");
+                return;
+            }
+
+            ShowCategories();
+            Console.Write("Выберите категорию (номер): ");
+            if (!int.TryParse(Console.ReadLine(), out int catIndex) || catIndex < 1 || catIndex > categories.Count)
+                return;
+
+            var category = categories[catIndex - 1];
+            if (category.IsEmpty())
+            {
+                Console.WriteLine("В этой категории нет вопросов.");
+                return;
+            }
+
+            category.ShowQuestionsWithDetails();
+            Console.Write("Выберите вопрос для редактирования (номер): ");
+            if (!int.TryParse(Console.ReadLine(), out int qIndex) || qIndex < 1 || qIndex > category.Questions.Count)
+                return;
+
+            category.EditQuestion(qIndex - 1);
+        }
+
+        private static void DeleteQuestionFlow()
+        {
+            if (categories.Count == 0)
+            {
+                Console.WriteLine("Нет доступных категорий.");
+                return;
+            }
+
+            ShowCategories();
+            Console.Write("Выберите категорию (номер): ");
+            if (!int.TryParse(Console.ReadLine(), out int catIndex) || catIndex < 1 || catIndex > categories.Count)
+                return;
+
+            var category = categories[catIndex - 1];
+            if (category.IsEmpty())
+            {
+                Console.WriteLine("В этой категории нет вопросов.");
+                return;
+            }
+
+            category.ShowQuestionsWithDetails();
+            Console.Write("Выберите вопрос для удаления (номер): ");
+            if (!int.TryParse(Console.ReadLine(), out int qIndex) || qIndex < 1 || qIndex > category.Questions.Count)
+                return;
+
+            category.DeleteQuestion(qIndex - 1);
+        }
+
         private static void ShowCategories()
         {
             if (categories.Count == 0)
@@ -119,22 +191,74 @@ namespace Category_Question_Console
 
         private static void LoadCategories()
         {
-            var files = Directory.GetFiles(".", "*.json")
-                                 .Where(f => !f.Contains("users.json"))
-                                 .ToArray();
+            Category.CreateBaseCategories();
 
+            if (!Directory.Exists("Categories"))
+                Directory.CreateDirectory("Categories");
+
+            var files = Directory.GetFiles("Categories", "*.json").ToArray();
+
+            categories.Clear();
             foreach (var file in files)
             {
                 try
                 {
                     string json = File.ReadAllText(file);
                     var cat = JsonSerializer.Deserialize<Category>(json);
-                    if (cat != null && categories.All(c => c.Name != cat.Name))
+                    if (cat != null && !string.IsNullOrEmpty(cat.Name))
                         categories.Add(cat);
                 }
                 catch { }
             }
-            Console.WriteLine("Категории загружены.");
+            Console.WriteLine($"Загружено {categories.Count} категорий.");
+        }
+
+        private static void SaveUsers()
+        {
+            var users = LoadTested();
+            string json = JsonSerializer.Serialize(users, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText("users.json", json);
+        }
+
+        private static void SaveUserScores()
+        {
+            var users = LoadTested();
+            foreach (var category in categories)
+            {
+                category.SaveToFile();
+            }
+        }
+
+        private static List<User> LoadTested()
+        {
+            List<User> users = new List<User>();
+            if (File.Exists("users.json"))
+            {
+                var json = File.ReadAllText("users.json");
+                users = JsonSerializer.Deserialize<List<User>>(json);
+                return users;
+            }
+            else
+            {
+                users.Add(new User { Login = "user", Password = "1234", Role = "Tested", Score = 0 });
+                users.Add(new User { Login = "adm", Password = "1234", Role = "Admin", Score = 0 });
+                return users;
+            }
+        }
+
+        private static void UpdateUserScore(User currentUser)
+        {
+            var users = LoadTested();
+            for (int i = 0; i < users.Count; i++)
+            {
+                if (users[i].Login == currentUser.Login)
+                {
+                    users[i].Score = currentUser.Score;
+                    break;
+                }
+            }
+            string json = JsonSerializer.Serialize(users, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText("users.json", json);
         }
 
         private static void UserSelectCategory(User user)
@@ -156,6 +280,9 @@ namespace Category_Question_Console
             {
                 Console.WriteLine("В этой категории нет вопросов.");
                 categories.Remove(selectedCategory);
+                string filePath = Path.Combine("Categories", $"{selectedCategory.Name}.json");
+                if (File.Exists(filePath))
+                    File.Delete(filePath);
                 return;
             }
 
@@ -166,25 +293,38 @@ namespace Category_Question_Console
 
             var question = selectedCategory.GetQuestion(qNum - 1);
 
+            Console.WriteLine("\n" + new string('-', 40));
+            Console.WriteLine($"Вопрос: {question.Text}");
+            Console.WriteLine(new string('-', 40));
             for (int i = 0; i < question.Options.Count; i++)
                 Console.WriteLine($"{i + 1}. {question.Options[i]}");
+            Console.WriteLine(new string('-', 40));
+            Console.Write("Выберите ответ (введите номер варианта): ");
 
-            Console.Write("\nВаш ответ: ");
-            if (int.TryParse(Console.ReadLine(), out int answer) && answer - 1 == question.CorrectOptionIndex)
+            if (int.TryParse(Console.ReadLine(), out int answer) && answer >= 1 && answer <= question.Options.Count && answer - 1 == question.CorrectOptionIndex)
             {
                 user.Score += question.Points;
-                Console.WriteLine($"Правильно! +{question.Points} баллов");
+                Console.WriteLine($"\nПравильно! +{question.Points} баллов");
+                Console.WriteLine($"Ваш текущий счет: {user.Score} баллов");
+                UpdateUserScore(user);
                 selectedCategory.RemoveQuestion(qNum - 1);
 
                 if (selectedCategory.IsEmpty())
                 {
-                    Console.WriteLine($"Категория '{selectedCategory.Name}' полностью пройдена и удалена.");
+                    Console.WriteLine($"\nКатегория '{selectedCategory.Name}' полностью пройдена и удалена.");
                     categories.Remove(selectedCategory);
+                    string filePath = Path.Combine("Categories", $"{selectedCategory.Name}.json");
+                    if (File.Exists(filePath))
+                        File.Delete(filePath);
+                }
+                else
+                {
+                    selectedCategory.SaveToFile();
                 }
             }
             else
             {
-                Console.WriteLine("Неверно.");
+                Console.WriteLine($"\nНеверно");
             }
         }
     }
