@@ -144,7 +144,6 @@ namespace Category_Question_Console
             Console.WriteLine($"Категория сохранена в {fileName}");
         }
 
-        // Category.cs - исправленный метод CreateBaseCategories()
         public static void CreateBaseCategories()
         {
             if (!Directory.Exists("Categories"))
@@ -154,52 +153,46 @@ namespace Category_Question_Console
             var existingFiles = Directory.GetFiles("Categories", "*.json").Select(Path.GetFileNameWithoutExtension).ToList();
 
             var mathCategory = new Category { Name = "Математика" };
-            if (!existingFiles.Contains("Математика"))
+            
+            for (int i = 1; i <= 10; i++)
             {
-                for (int i = 1; i <= 10; i++)
+                mathCategory.Questions.Add(new Question
                 {
-                    mathCategory.Questions.Add(new Question
-                    {
-                        Text = $"Сколько будет 2 + {i}?",
-                        Options = new List<string> { $"{2 + i}", $"{2 + i + 1}", $"{2 + i - 1}", $"{i}" },
-                        CorrectOptionIndex = 0,
-                        Points = 10
-                    });
-                }
-                categoriesToCreate.Add(mathCategory);
+                    Text = $"Сколько будет 2 + {i}?",
+                    Options = new List<string> { $"{2 + i}", $"{2 + i + 1}", $"{2 + i - 1}", $"{i}" },
+                    CorrectOptionIndex = 0,
+                    Points = 10
+                });
             }
+            categoriesToCreate.Add(mathCategory);
+            
 
             var geographyCategory = new Category { Name = "География" };
-            if (!existingFiles.Contains("География"))
-            {
-                geographyCategory.Questions.Add(new Question { Text = "Столица России?", Options = new List<string> { "Москва", "Санкт-Петербург", "Новосибирск", "Казань" }, CorrectOptionIndex = 0, Points = 10 });
-                geographyCategory.Questions.Add(new Question { Text = "Самая длинная река в мире?", Options = new List<string> { "Амазонка", "Нил", "Янцзы", "Миссисипи" }, CorrectOptionIndex = 0, Points = 10 });
-                geographyCategory.Questions.Add(new Question { Text = "Самая высокая гора?", Options = new List<string> { "Эверест", "К2", "Канченджанга", "Лхоцзе" }, CorrectOptionIndex = 0, Points = 10 });
-                geographyCategory.Questions.Add(new Question { Text = "Самое большое озеро?", Options = new List<string> { "Каспийское море", "Верхнее", "Виктория", "Гурон" }, CorrectOptionIndex = 0, Points = 10 });
-                geographyCategory.Questions.Add(new Question { Text = "Самая маленькая страна?", Options = new List<string> { "Ватикан", "Монако", "Сан-Марино", "Лихтенштейн" }, CorrectOptionIndex = 0, Points = 10 });
-                geographyCategory.Questions.Add(new Question { Text = "Самый густонаселенный город?", Options = new List<string> { "Токио", "Дели", "Шанхай", "Сан-Паулу" }, CorrectOptionIndex = 0, Points = 10 });
-                geographyCategory.Questions.Add(new Question { Text = "Самая большая пустыня?", Options = new List<string> { "Сахара", "Антарктическая", "Аравийская", "Гоби" }, CorrectOptionIndex = 0, Points = 10 });
-                geographyCategory.Questions.Add(new Question { Text = "Самый большой океан?", Options = new List<string> { "Тихий", "Атлантический", "Индийский", "Северный Ледовитый" }, CorrectOptionIndex = 0, Points = 10 });
-                geographyCategory.Questions.Add(new Question { Text = "Самая высокая точка Европы?", Options = new List<string> { "Эльбрус", "Монблан", "Дыхтау", "Казбек" }, CorrectOptionIndex = 0, Points = 10 });
-                geographyCategory.Questions.Add(new Question { Text = "Самый большой материк?", Options = new List<string> { "Евразия", "Африка", "Северная Америка", "Южная Америка" }, CorrectOptionIndex = 0, Points = 10 });
-                categoriesToCreate.Add(geographyCategory);
-            }
+            
+            geographyCategory.Questions.Add(new Question { Text = "Столица России?", Options = new List<string> { "Москва", "Санкт-Петербург", "Новосибирск", "Казань" }, CorrectOptionIndex = 0, Points = 10 });
+            geographyCategory.Questions.Add(new Question { Text = "Самая длинная река в мире?", Options = new List<string> { "Амазонка", "Нил", "Янцзы", "Миссисипи" }, CorrectOptionIndex = 0, Points = 10 });
+            geographyCategory.Questions.Add(new Question { Text = "Самая высокая гора?", Options = new List<string> { "Эверест", "К2", "Канченджанга", "Лхоцзе" }, CorrectOptionIndex = 0, Points = 10 });
+            geographyCategory.Questions.Add(new Question { Text = "Самое большое озеро?", Options = new List<string> { "Каспийское море", "Верхнее", "Виктория", "Гурон" }, CorrectOptionIndex = 0, Points = 10 });
+            geographyCategory.Questions.Add(new Question { Text = "Самая маленькая страна?", Options = new List<string> { "Ватикан", "Монако", "Сан-Марино", "Лихтенштейн" }, CorrectOptionIndex = 0, Points = 10 });
+            geographyCategory.Questions.Add(new Question { Text = "Самый густонаселенный город?", Options = new List<string> { "Токио", "Дели", "Шанхай", "Сан-Паулу" }, CorrectOptionIndex = 0, Points = 10 });
+            geographyCategory.Questions.Add(new Question { Text = "Самая большая пустыня?", Options = new List<string> { "Сахара", "Антарктическая", "Аравийская", "Гоби" }, CorrectOptionIndex = 0, Points = 10 });
+            geographyCategory.Questions.Add(new Question { Text = "Самый большой океан?", Options = new List<string> { "Тихий", "Атлантический", "Индийский", "Северный Ледовитый" }, CorrectOptionIndex = 0, Points = 10 });
+            geographyCategory.Questions.Add(new Question { Text = "Самая высокая точка Европы?", Options = new List<string> { "Эльбрус", "Монблан", "Дыхтау", "Казбек" }, CorrectOptionIndex = 0, Points = 10 });
+            geographyCategory.Questions.Add(new Question { Text = "Самый большой материк?", Options = new List<string> { "Евразия", "Африка", "Северная Америка", "Южная Америка" }, CorrectOptionIndex = 0, Points = 10 });
+            categoriesToCreate.Add(geographyCategory);
 
             var historyCategory = new Category { Name = "История" };
-            if (!existingFiles.Contains("История"))
-            {
-                historyCategory.Questions.Add(new Question { Text = "В каком году была Вторая мировая война?", Options = new List<string> { "1939-1945", "1914-1918", "1941-1945", "1939-1944" }, CorrectOptionIndex = 0, Points = 10 });
-                historyCategory.Questions.Add(new Question { Text = "Кто открыл Америку?", Options = new List<string> { "Колумб", "Магеллан", "Васко да Гама", "Кук" }, CorrectOptionIndex = 0, Points = 10 });
-                historyCategory.Questions.Add(new Question { Text = "Первый полет человека в космос?", Options = new List<string> { "1961", "1957", "1965", "1969" }, CorrectOptionIndex = 0, Points = 10 });
-                historyCategory.Questions.Add(new Question { Text = "Кто написал 'Войну и мир'?", Options = new List<string> { "Толстой", "Достоевский", "Пушкин", "Чехов" }, CorrectOptionIndex = 0, Points = 10 });
-                historyCategory.Questions.Add(new Question { Text = "Где произошла Куликовская битва?", Options = new List<string> { "1380", "1240", "1480", "1612" }, CorrectOptionIndex = 0, Points = 10 });
-                historyCategory.Questions.Add(new Question { Text = "Кто был первым президентом США?", Options = new List<string> { "Вашингтон", "Джефферсон", "Линкольн", "Адамс" }, CorrectOptionIndex = 0, Points = 10 });
-                historyCategory.Questions.Add(new Question { Text = "Год основания Санкт-Петербурга?", Options = new List<string> { "1703", "1712", "1721", "1682" }, CorrectOptionIndex = 0, Points = 10 });
-                historyCategory.Questions.Add(new Question { Text = "Кто изобрел телефон?", Options = new List<string> { "Белл", "Эдисон", "Тесла", "Маркони" }, CorrectOptionIndex = 0, Points = 10 });
-                historyCategory.Questions.Add(new Question { Text = "Столица Византийской империи?", Options = new List<string> { "Константинополь", "Рим", "Афины", "Александрия" }, CorrectOptionIndex = 0, Points = 10 });
-                historyCategory.Questions.Add(new Question { Text = "Год крещения Руси?", Options = new List<string> { "988", "862", "945", "980" }, CorrectOptionIndex = 0, Points = 10 });
-                categoriesToCreate.Add(historyCategory);
-            }
+            historyCategory.Questions.Add(new Question { Text = "В каком году была Вторая мировая война?", Options = new List<string> { "1939-1945", "1914-1918", "1941-1945", "1939-1944" }, CorrectOptionIndex = 0, Points = 10 });
+            historyCategory.Questions.Add(new Question { Text = "Кто открыл Америку?", Options = new List<string> { "Колумб", "Магеллан", "Васко да Гама", "Кук" }, CorrectOptionIndex = 0, Points = 10 });
+            historyCategory.Questions.Add(new Question { Text = "Первый полет человека в космос?", Options = new List<string> { "1961", "1957", "1965", "1969" }, CorrectOptionIndex = 0, Points = 10 });
+            historyCategory.Questions.Add(new Question { Text = "Кто написал 'Войну и мир'?", Options = new List<string> { "Толстой", "Достоевский", "Пушкин", "Чехов" }, CorrectOptionIndex = 0, Points = 10 });
+            historyCategory.Questions.Add(new Question { Text = "Где произошла Куликовская битва?", Options = new List<string> { "1380", "1240", "1480", "1612" }, CorrectOptionIndex = 0, Points = 10 });
+            historyCategory.Questions.Add(new Question { Text = "Кто был первым президентом США?", Options = new List<string> { "Вашингтон", "Джефферсон", "Линкольн", "Адамс" }, CorrectOptionIndex = 0, Points = 10 });
+            historyCategory.Questions.Add(new Question { Text = "Год основания Санкт-Петербурга?", Options = new List<string> { "1703", "1712", "1721", "1682" }, CorrectOptionIndex = 0, Points = 10 });
+            historyCategory.Questions.Add(new Question { Text = "Кто изобрел телефон?", Options = new List<string> { "Белл", "Эдисон", "Тесла", "Маркони" }, CorrectOptionIndex = 0, Points = 10 });
+            historyCategory.Questions.Add(new Question { Text = "Столица Византийской империи?", Options = new List<string> { "Константинополь", "Рим", "Афины", "Александрия" }, CorrectOptionIndex = 0, Points = 10 });
+            historyCategory.Questions.Add(new Question { Text = "Год крещения Руси?", Options = new List<string> { "988", "862", "945", "980" }, CorrectOptionIndex = 0, Points = 10 });
+            categoriesToCreate.Add(historyCategory);
 
             foreach (var cat in categoriesToCreate)
             {

@@ -31,6 +31,7 @@ namespace Category_Question_Console
             var menu = new List<string>
             {
                 "Выбрать категорию",
+                "Загрузить категории",
                 "Мой результат",
                 "Logout",
                 "Exit"

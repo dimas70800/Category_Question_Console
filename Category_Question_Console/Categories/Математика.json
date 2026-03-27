@@ -2,6 +2,18 @@
   "Name": "\u041C\u0430\u0442\u0435\u043C\u0430\u0442\u0438\u043A\u0430",
   "Questions": [
     {
+      "Text": "\u0421\u043A\u043E\u043B\u044C\u043A\u043E \u0431\u0443\u0434\u0435\u0442 2 \u002B 1?",
+      "Options": [
+        "3",
+        "4",
+        "2",
+        "1"
+      ],
+      "CorrectOptionIndex": 0,
+      "Points": 10,
+      "IsResolved": false
+    },
+    {
       "Text": "\u0421\u043A\u043E\u043B\u044C\u043A\u043E \u0431\u0443\u0434\u0435\u0442 2 \u002B 2?",
       "Options": [
         "4",
@@ -92,6 +104,18 @@
         "12",
         "10",
         "9"
+      ],
+      "CorrectOptionIndex": 0,
+      "Points": 10,
+      "IsResolved": false
+    },
+    {
+      "Text": "\u0421\u043A\u043E\u043B\u044C\u043A\u043E \u0431\u0443\u0434\u0435\u0442 2 \u002B 10?",
+      "Options": [
+        "12",
+        "13",
+        "11",
+        "10"
       ],
       "CorrectOptionIndex": 0,
       "Points": 10,
