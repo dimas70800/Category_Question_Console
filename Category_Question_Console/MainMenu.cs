@@ -117,6 +117,10 @@ namespace Category_Question_Console
                 case "Мой результат":
                     Console.WriteLine($"Ваш текущий результат: {user.Score} баллов");
                     break;
+                // В HandleChoice добавить:
+                case "Управление задачами":
+                    AdminTaskManager.ShowAllTasks();
+                    break;
             }
             Console.WriteLine("\nНажмите любую клавишу...");
             Console.ReadKey();

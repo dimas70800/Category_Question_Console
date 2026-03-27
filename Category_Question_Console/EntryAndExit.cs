@@ -55,6 +55,25 @@ namespace Category_Question_Console
             }
         }
 
+
+        // В методе AdminMenu добавить:
+        public static string AdminMenu(User currentUser)
+        {
+            var menu = new List<string>
+            {
+                "Управление задачами",        // НОВОЕ!
+                "Добавить категорию",
+                "Добавить вопрос в категорию",
+                "Редактировать вопрос",
+                "Удалить вопрос",
+                "Сохранить категории",
+                "Загрузить категории",
+                "Logout",
+                "Exit"
+            };
+            return RunMenu(menu, currentUser);
+        }
+
         private static void SaveUserScore(User currentUser)
         {
             var users = LoadTested();

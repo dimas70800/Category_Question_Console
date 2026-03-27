@@ -9,6 +9,9 @@ class Program
         if (!Directory.Exists("Categories"))
             Directory.CreateDirectory("Categories");
 
+        // Инициализация задач администратора
+        AdminTaskManager.Initialize();
+
         EntryAndExit.RunApp();
     }
 }
