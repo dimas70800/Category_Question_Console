@@ -41,6 +41,7 @@ namespace Category_Question_Console
         private static string RunMenu(List<string> menu, User currentUser)
         {
             LoadCategories();
+            LoadUserProgress(currentUser);
             int position = 0;
             while (true)
             {
@@ -59,8 +60,8 @@ namespace Category_Question_Console
                     string choice = menu[position];
                     if (choice == "Logout" || choice == "Exit")
                     {
+                        SaveUserProgress(currentUser);
                         SaveUsers();
-                        SaveUserScores();
                         Console.Clear();
                         return choice;
                     }
@@ -108,6 +109,7 @@ namespace Category_Question_Console
 
                 case "Загрузить категории":
                     LoadCategories();
+                    LoadUserProgress(user);
                     break;
 
                 case "Выбрать категорию":
@@ -213,20 +215,82 @@ namespace Category_Question_Console
             Console.WriteLine($"Загружено {categories.Count} категорий.");
         }
 
+        private static void LoadUserProgress(User user)
+        {
+            string progressFile = $"progress_{user.Login}.json";
+
+            if (File.Exists(progressFile))
+            {
+                try
+                {
+                    string json = File.ReadAllText(progressFile);
+                    var data = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+
+                    if (data != null && data.ContainsKey("Score"))
+                    {
+                        user.Score = JsonSerializer.Deserialize<int>(data["Score"].ToString());
+                    }
+
+                    if (data != null && data.ContainsKey("ResolvedQuestions"))
+                    {
+                        var resolvedQuestions = JsonSerializer.Deserialize<Dictionary<string, List<int>>>(data["ResolvedQuestions"].ToString());
+
+                        foreach (var category in categories)
+                        {
+                            if (resolvedQuestions.ContainsKey(category.Name))
+                            {
+                                foreach (var index in resolvedQuestions[category.Name])
+                                {
+                                    if (index >= 0 && index < category.Questions.Count)
+                                    {
+                                        category.Questions[index].IsResolved = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                catch { }
+            }
+        }
+
+        private static void SaveUserProgress(User user)
+        {
+            string progressFile = $"progress_{user.Login}.json";
+
+            var resolvedQuestions = new Dictionary<string, List<int>>();
+
+            foreach (var category in categories)
+            {
+                var resolvedIndices = new List<int>();
+                for (int i = 0; i < category.Questions.Count; i++)
+                {
+                    if (category.Questions[i].IsResolved)
+                    {
+                        resolvedIndices.Add(i);
+                    }
+                }
+                if (resolvedIndices.Count > 0)
+                {
+                    resolvedQuestions[category.Name] = resolvedIndices;
+                }
+            }
+
+            var data = new Dictionary<string, object>
+            {
+                { "Score", user.Score },
+                { "ResolvedQuestions", resolvedQuestions }
+            };
+
+            string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(progressFile, json);
+        }
+
         private static void SaveUsers()
         {
             var users = LoadTested();
             string json = JsonSerializer.Serialize(users, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText("users.json", json);
-        }
-
-        private static void SaveUserScores()
-        {
-            var users = LoadTested();
-            foreach (var category in categories)
-            {
-                category.SaveToFile();
-            }
         }
 
         private static List<User> LoadTested()
@@ -241,6 +305,7 @@ namespace Category_Question_Console
             else
             {
                 users.Add(new User { Login = "user", Password = "1234", Role = "Tested", Score = 0 });
+                users.Add(new User { Login = "user2", Password = "1234", Role = "Tested", Score = 0 });
                 users.Add(new User { Login = "adm", Password = "1234", Role = "Admin", Score = 0 });
                 return users;
             }
@@ -269,31 +334,126 @@ namespace Category_Question_Console
                 return;
             }
 
-            ShowCategories();
-            Console.Write("\nВыберите категорию: ");
-            if (!int.TryParse(Console.ReadLine(), out int catNum) || catNum < 1 || catNum > categories.Count)
-                return;
-
-            var selectedCategory = categories[catNum - 1];
-
-            if (selectedCategory.IsEmpty())
+            while (true)
             {
-                Console.WriteLine("В этой категории нет вопросов.");
-                categories.Remove(selectedCategory);
-                string filePath = Path.Combine("Categories", $"{selectedCategory.Name}.json");
-                if (File.Exists(filePath))
-                    File.Delete(filePath);
-                return;
+                Console.Clear();
+                Console.WriteLine($"Выбор категории | {user.Login} | Очки: {user.Score}\n");
+
+                // Показываем только категории с нерешенными вопросами
+                var availableCategories = new List<Category>();
+                for (int i = 0; i < categories.Count; i++)
+                {
+                    if (categories[i].Questions.Any(q => !q.IsResolved))
+                    {
+                        availableCategories.Add(categories[i]);
+                        int unresolvedCount = categories[i].Questions.Count(q => !q.IsResolved);
+                        Console.WriteLine($"{availableCategories.Count}. {categories[i].Name} ({unresolvedCount} доступных вопросов)");
+                    }
+                }
+
+                if (availableCategories.Count == 0)
+                {
+                    Console.WriteLine("Все вопросы пройдены! Поздравляем!");
+                    Console.WriteLine("\n0. Вернуться в главное меню");
+                    Console.Write("\nВыберите действие: ");
+                    if (Console.ReadLine() == "0")
+                        break;
+                    continue;
+                }
+
+                Console.WriteLine("\n0. Вернуться в главное меню");
+                Console.Write("\nВыберите категорию: ");
+
+                if (!int.TryParse(Console.ReadLine(), out int catNum))
+                    continue;
+
+                if (catNum == 0)
+                    break;
+
+                if (catNum < 1 || catNum > availableCategories.Count)
+                {
+                    Console.WriteLine("Неверный номер категории!");
+                    Console.ReadKey();
+                    continue;
+                }
+
+                var selectedCategory = availableCategories[catNum - 1];
+                UserSelectQuestion(user, selectedCategory);
             }
+        }
 
-            selectedCategory.ShowQuestions();
-            Console.Write("\nВыберите вопрос: ");
-            if (!int.TryParse(Console.ReadLine(), out int qNum) || qNum < 1 || qNum > selectedCategory.Questions.Count)
-                return;
+        private static void UserSelectQuestion(User user, Category category)
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine($"Категория: {category.Name} | {user.Login} | Очки: {user.Score}\n");
 
-            var question = selectedCategory.GetQuestion(qNum - 1);
+                // Показываем только нерешенные вопросы
+                var availableQuestions = new List<Question>();
+                for (int i = 0; i < category.Questions.Count; i++)
+                {
+                    if (!category.Questions[i].IsResolved)
+                    {
+                        availableQuestions.Add(category.Questions[i]);
+                        Console.WriteLine($"{availableQuestions.Count}. {category.Questions[i].Text} ({category.Questions[i].Points} баллов)");
+                    }
+                }
 
-            Console.WriteLine("\n" + new string('-', 40));
+                if (availableQuestions.Count == 0)
+                {
+                    Console.WriteLine("В этой категории больше нет доступных вопросов!");
+                    Console.WriteLine("\nНажмите любую клавишу для возврата...");
+                    Console.ReadKey();
+                    break;
+                }
+
+                Console.WriteLine("\n0. Вернуться к выбору категорий");
+                Console.Write("\nВыберите вопрос: ");
+
+                if (!int.TryParse(Console.ReadLine(), out int qNum))
+                    continue;
+
+                if (qNum == 0)
+                    break;
+
+                if (qNum < 1 || qNum > availableQuestions.Count)
+                {
+                    Console.WriteLine("Неверный номер вопроса!");
+                    Console.ReadKey();
+                    continue;
+                }
+
+                // Находим оригинальный индекс вопроса
+                int originalIndex = -1;
+                for (int i = 0, count = 0; i < category.Questions.Count; i++)
+                {
+                    if (!category.Questions[i].IsResolved)
+                    {
+                        count++;
+                        if (count == qNum)
+                        {
+                            originalIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                if (originalIndex != -1)
+                {
+                    AskQuestion(user, category, originalIndex);
+                    SaveUserProgress(user);
+                }
+            }
+        }
+
+        private static void AskQuestion(User user, Category category, int questionIndex)
+        {
+            var question = category.Questions[questionIndex];
+
+            Console.Clear();
+            Console.WriteLine($"Категория: {category.Name} | {user.Login} | Очки: {user.Score}\n");
+            Console.WriteLine(new string('-', 40));
             Console.WriteLine($"Вопрос: {question.Text}");
             Console.WriteLine(new string('-', 40));
             for (int i = 0; i < question.Options.Count; i++)
@@ -301,31 +461,28 @@ namespace Category_Question_Console
             Console.WriteLine(new string('-', 40));
             Console.Write("Выберите ответ (введите номер варианта): ");
 
-            if (int.TryParse(Console.ReadLine(), out int answer) && answer >= 1 && answer <= question.Options.Count && answer - 1 == question.CorrectOptionIndex)
+            if (int.TryParse(Console.ReadLine(), out int answer) && answer >= 1 && answer <= question.Options.Count)
             {
-                user.Score += question.Points;
-                Console.WriteLine($"\nПравильно! +{question.Points} баллов");
-                Console.WriteLine($"Ваш текущий счет: {user.Score} баллов");
-                UpdateUserScore(user);
-                selectedCategory.RemoveQuestion(qNum - 1);
-
-                if (selectedCategory.IsEmpty())
+                if (answer - 1 == question.CorrectOptionIndex)
                 {
-                    Console.WriteLine($"\nКатегория '{selectedCategory.Name}' полностью пройдена и удалена.");
-                    categories.Remove(selectedCategory);
-                    string filePath = Path.Combine("Categories", $"{selectedCategory.Name}.json");
-                    if (File.Exists(filePath))
-                        File.Delete(filePath);
+                    user.Score += question.Points;
+                    Console.WriteLine($"\n✓ Правильно! +{question.Points} баллов");
+                    Console.WriteLine($"Ваш текущий счет: {user.Score} баллов");
+                    question.IsResolved = true;
+                    UpdateUserScore(user);
                 }
                 else
                 {
-                    selectedCategory.SaveToFile();
+                    Console.WriteLine($"\n✗ Неверно! Правильный ответ: {question.Options[question.CorrectOptionIndex]}");
                 }
             }
             else
             {
-                Console.WriteLine($"\nНеверно");
+                Console.WriteLine("\nНеверный ввод!");
             }
+
+            Console.WriteLine("\nНажмите любую клавишу, чтобы продолжить...");
+            Console.ReadKey();
         }
     }
 }

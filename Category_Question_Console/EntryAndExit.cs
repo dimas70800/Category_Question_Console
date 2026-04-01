@@ -100,6 +100,7 @@ namespace Category_Question_Console
             else
             {
                 users.Add(new User { Login = "user", Password = "1234", Role = "Tested" });
+                users.Add(new User { Login = "user2", Password = "1234", Role = "Tested" });
                 users.Add(new User { Login = "adm", Password = "1234", Role = "Admin" });
                 string json = JsonSerializer.Serialize(users, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText("users.json", json);
