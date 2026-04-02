@@ -3,17 +3,13 @@
     "Login": "user",
     "Password": "1234",
     "Role": "Tested",
-<<<<<<< Updated upstream
-    "Score": 1160
-=======
-    "Score": 70
+    "Score": 0
   },
   {
     "Login": "user2",
     "Password": "1234",
     "Role": "Tested",
-    "Score": 10
->>>>>>> Stashed changes
+    "Score": 0
   },
   {
     "Login": "adm",
